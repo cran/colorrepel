@@ -16,6 +16,8 @@ color_repel(
   seed = 34,
   col = "colour",
   autoswitch = TRUE,
+  layer = 1,
+  out_orig = FALSE,
   out_worst = FALSE
 )
 }
@@ -34,13 +36,17 @@ color_repel(
 
 \item{verbose}{whether to print messages}
 
-\item{downsample}{downsample when too many datapoints are present}
+\item{downsample}{downsample when too many datapoints are present, or use chull}
 
 \item{seed}{sampling randomization seed}
 
 \item{col}{colour or fill in ggplot}
 
 \item{autoswitch}{try to switch between colour and fill automatically}
+
+\item{layer}{layer to detect color, defaults to first}
+
+\item{out_orig}{output the original colors as named vector}
 
 \item{out_worst}{output the worst combination instead of best}
 }
@@ -52,7 +58,7 @@ Reorder ggplot colors to maximize color differences in space
 }
 \examples{
 a <- ggplot2::ggplot(ggplot2::mpg, ggplot2::aes(displ, hwy)) +
- ggplot2::geom_point(ggplot2::aes(color = as.factor(cyl)))
+  ggplot2::geom_point(ggplot2::aes(color = as.factor(cyl)))
 new_colors <- color_repel(a)
 b <- a + ggplot2::scale_color_manual(values = new_colors)
 }

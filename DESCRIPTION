@@ -1,7 +1,7 @@
 Package: colorrepel
 Title: Repel Visually Similar Colors for Colorblind Users in Various
         Plots
-Version: 0.1.0
+Version: 0.3.0
 Authors@R: 
     person(given = "Rui",
            family = "Fu",
@@ -14,13 +14,14 @@ Encoding: UTF-8
 RoxygenNote: 7.2.3
 Depends: R (>= 3.5.0)
 Imports: grDevices, matrixStats, Matrix, distances, stats, dqrng,
-        gtools, purrr, dplyr, ggplot2, ggrepel, ggalt
+        gtools, purrr, dplyr, stringr, ggplot2, ggrepel, ggalt, plotly,
+        knitr, png
 Suggests: colorspace
 URL: https://github.com/raysinensis/color_repel
 ByteCompile: true
 NeedsCompilation: no
-Packaged: 2024-09-16 11:51:11 UTC; rfu
+Packaged: 2024-09-29 13:17:40 UTC; rfu
 Author: Rui Fu [cre, aut, cph] (<https://orcid.org/0000-0001-8183-4549>)
 Maintainer: Rui Fu <raysinensis@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-09-17 11:50:08 UTC
+Date/Publication: 2024-09-29 13:40:02 UTC

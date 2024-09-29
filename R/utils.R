@@ -24,7 +24,7 @@ matrix2_score_n <- function(dist1,
   dist1[dist1 == Inf] <- NA
   dist2[dist2 == Inf] <- NA
   len <- ncol(dist2)
-  
+
   s <- vector("list", n)
   dqrng::dqset.seed(seed)
   for (i in 1:n) {
@@ -32,17 +32,17 @@ matrix2_score_n <- function(dist1,
   }
   s <- unique(s)
   if (verbose) {
-    message("attempting ", length(s), " calcuations...")
+    message("attempting ", length(s), " calculations...")
     if (length(s) == min(factorial(len))) {
       message("all color combos covered")
     }
   }
-  
+
   ord1 <- 1:ncol(dist2)
   score1 <- matrix2_score(dist1, dist2)
   score0 <- score1
   scoremax <- score1
-  
+
   for (i in 1:length(s)) {
     ord_temp <- s[[i]]
     dist3 <- dist2[ord_temp, ord_temp]
@@ -76,8 +76,9 @@ matrix2_score_n <- function(dist1,
 #' @param seed sampling randomization seed
 #' @return list with new downsampled matrix/data.frame and id vector
 #' @examples
-#' res <- by_cluster_sampling(data.frame(y = c(1, 2, 3, 4, 5, 6)), 
-#' vec = c(1, 2, 1, 2, 1, 2), frac = 0.5)
+#' res <- by_cluster_sampling(data.frame(y = c(1, 2, 3, 4, 5, 6)),
+#'   vec = c(1, 2, 1, 2, 1, 2), frac = 0.5
+#' )
 #' @export
 by_cluster_sampling <- function(df, vec, frac, seed = 34) {
   dfs <- split(df, vec)
@@ -96,7 +97,23 @@ by_cluster_sampling <- function(df, vec, frac, seed = 34) {
   list(dfout, vecout)
 }
 
-#' Rowwise math from matrix/data.frame per cluster based on another vector/metadata, 
+by_cluster_chull <- function(df, vec, xcol, ycol) {
+  dfs <- split(df, vec)
+  vecout <- c()
+  dflist <- list()
+  for (x in names(dfs)) {
+    df1 <- dfs[[x]]
+    samp <- grDevices::chull(df1[[xcol]], df1[[ycol]])
+    em1 <- df1[samp, , drop = FALSE]
+    vec1 <- rep(x, nrow(em1))
+    vecout <- c(vecout, vec1)
+    dflist[[x]] <- em1
+  }
+  dfout <- do.call(rbind, dflist)
+  list(dfout, vecout)
+}
+
+#' Rowwise math from matrix/data.frame per cluster based on another vector/metadata,
 #' similar to clustifyr::average_clusters but ids as rows
 #' @param mat expression matrix
 #' @param metadata data.frame or vector containing cluster assignments per cell.
@@ -107,7 +124,7 @@ by_cluster_sampling <- function(df, vec, frac, seed = 34) {
 #' @param cluster_col column in metadata with cluster number
 #' @param cell_col if provided, will reorder matrix first
 #' @param low_threshold option to remove clusters with too few cells
-#' @param method whether to take mean (default), median, 10% truncated mean, or trimean, 
+#' @param method whether to take mean (default), median, 10% truncated mean, or trimean,
 #' max, min
 #' @param output_log whether to report log results
 #' @param cut_n set on a limit of genes as expressed, lower ranked genes
@@ -116,8 +133,10 @@ by_cluster_sampling <- function(df, vec, frac, seed = 34) {
 #' @return average expression matrix, with genes for row names, and clusters
 #'  for column names
 #' @examples
-#' mat <- average_clusters_rowwise(data.frame(y = c(1, 2, 3, 4, 5, 6), 
-#' x = c(1, 2, 3, 4, 5, 6)), metadata = c(1, 2, 1, 2, 1, 2), method = "min")
+#' mat <- average_clusters_rowwise(data.frame(
+#'   y = c(1, 2, 3, 4, 5, 6),
+#'   x = c(1, 2, 3, 4, 5, 6)
+#' ), metadata = c(1, 2, 1, 2, 1, 2), method = "min")
 #' @export
 average_clusters_rowwise <- function(mat, metadata, cluster_col = "cluster", if_log = FALSE,
                                      cell_col = NULL, low_threshold = 0, method = "mean", output_log = FALSE,
@@ -297,20 +316,26 @@ average_clusters_rowwise <- function(mat, metadata, cluster_col = "cluster", if_
 #' Extract custom labels from ggplot object
 #' @param g ggplot object
 #' @return named vector of labels
-#' @examples 
-#' a <- ggplot2::ggplot(ggplot2::mpg, ggplot2::aes(displ, hwy)) + 
-#' ggplot2::geom_point(ggplot2::aes(color = as.factor(cyl))) +
-#' ggplot2::geom_text(ggplot2::aes(label = model))
+#' @examples
+#' a <- ggplot2::ggplot(ggplot2::mpg, ggplot2::aes(displ, hwy)) +
+#'   ggplot2::geom_point(ggplot2::aes(color = as.factor(cyl))) +
+#'   ggplot2::geom_text(ggplot2::aes(label = model))
 #' get_labs(a)
 #' @export
 get_labs <- function(g) {
   g2 <- ggplot2::ggplot_build(g)
-  g2$plot$scales$scales[[1]]$get_labels()
+  nlayer <- length(g2$plot$scales$scales)
+  for (x in 1:nlayer) {
+    ls <- g2$plot$scales$scales[[x]]$get_labels()
+    if (length(ls) > 0) {
+      return(ls)
+    }
+  }
 }
 
-check_colour_mapping <- function(g, col = "colour", return_col = FALSE, autoswitch = TRUE) {
+check_colour_mapping <- function(g, col = "colour", return_col = FALSE, autoswitch = TRUE, layer = 1) {
   g2 <- ggplot2::ggplot_build(g)
-  cols <- dplyr::arrange(g2$data[[1]], group)
+  cols <- dplyr::arrange(g2$data[[layer]], group)
   cols <- unique(cols[[col]])
   if (length(cols) <= 1) {
     if (!autoswitch) {
@@ -321,7 +346,7 @@ check_colour_mapping <- function(g, col = "colour", return_col = FALSE, autoswit
     } else {
       col <- "fill"
     }
-    cols <- dplyr::arrange(g2$data[[1]], group)
+    cols <- dplyr::arrange(g2$data[[layer]], group)
     cols <- unique(cols[[col]])
   }
   if (return_col) {
@@ -592,30 +617,45 @@ average_clusters <- function(mat,
     expr_mat[df_temp > cut_n] <- 0
     out <- expr_mat
   }
-
   return(out)
 }
 
 #' ggrepel labeling of clusters
 #' @param g ggplot object or data.frame
-#' @param group_col column name in data.frame, default to "group" in ggplot data
+#' @param group_col column name in data.frame, default to "label" or "group" in ggplot data
 #' @param x column name in data.frame for x
 #' @param y column name in data.frame for y
 #' @param txt_pt text size
 #' @param remove_current whether to remove current text
 #' @param layer text layer to remove, defaults to last
+#' @param ... arguments passed to geom_text_repel
 #' @return function, if data.frame input, or new ggplot object
 #' @examples
 #' g <- label_repel(ggplot2::ggplot(mtcars, ggplot2::aes(x = hp, y = wt, color = as.character(cyl))) +
 #'   ggplot2::geom_point(), remove_current = FALSE)
 #' @export
-label_repel <- function(g, group_col = "group", x = "x", y = "y",
-                        txt_pt = 3, remove_current = TRUE, layer = "auto") {
+label_repel <- function(g, group_col = "auto", x = "x", y = "y",
+                        txt_pt = 3, remove_current = "auto", layer = "auto", ...) {
+  g_orig <- g
   if (is.data.frame(g)) {
     so_df <- g
   } else {
     g2 <- ggplot2::ggplot_build(g)
-    so_df <- g2$data[[1]]
+    if (layer == "auto") {
+      layer <- length(g2$data)
+    }
+    so_df <- g2$data[[layer]]
+  }
+  if (group_col == "auto") {
+    if ("label" %in% colnames(so_df)) {
+      group_col <- "label"
+    } else {
+      group_col <- "group"
+    }
+  }
+  if (is.numeric(so_df[[group_col]])) {
+    temp_group <- get_labs(g)
+    so_df[[group_col]] <- factor(so_df[[group_col]], labels = temp_group)
   }
   centers <- dplyr::group_by(so_df, !!dplyr::sym(group_col))
   centers <- dplyr::summarize(centers,
@@ -650,12 +690,16 @@ label_repel <- function(g, group_col = "group", x = "x", y = "y",
     point.padding = 0.5,
     box.padding = 0.5,
     max.iter = 50000,
-    max.overlaps = 10000
+    max.overlaps = 10000,
+    ...
   )
 
   if (is.data.frame(g)) {
     d
   } else {
+    if (remove_current == "auto") {
+      remove_current <- check_labels(g_orig)
+    }
     if (remove_current) {
       g <- remove_current_labels(g, layer = layer)
     }
@@ -663,10 +707,25 @@ label_repel <- function(g, group_col = "group", x = "x", y = "y",
   }
 }
 
-remove_current_labels <- function(g, layer = "auto") {
+check_patchwork <- function(g, layer = 1) {
   if ("patchwork" %in% class(g)) {
-    g <- g[[1]]
+    g[[layer]]
+  } else {
+    g
   }
+}
+
+check_labels <- function(g, layer = "auto", text = "text|label") {
+  g <- check_patchwork(g)
+  if (layer == "auto") {
+    layer <- length(g[["layers"]])
+  }
+  cs <- stringr::str_to_lower(class(g[["layers"]][[layer]][["geom"]]))
+  any(stringr::str_detect(cs, text))
+}
+
+remove_current_labels <- function(g, layer = "auto") {
+  g <- check_patchwork(g)
   if (layer == "auto") {
     layer <- length(g[["layers"]])
   }
@@ -674,12 +733,9 @@ remove_current_labels <- function(g, layer = "auto") {
   g
 }
 
-prep_encircle <- function(g, threshold = 0.1, nmin = 0.1, downsample = 5000, seed = 42) {
-  if ("patchwork" %in% class(g)) {
-    g <- g[[1]]
-  }
+prep_encircle <- function(g, threshold = 0.01, nmin = 0.01, downsample = 5000, seed = 42) {
+  g <- check_patchwork(g)
   g <- ggplot2::ggplot_build(g)
-
   em <- dplyr::select(g$data[[1]], c(x, y))
   clust <- g$data[[1]]$group
   if (nrow(em) > downsample) {
@@ -695,7 +751,7 @@ prep_encircle <- function(g, threshold = 0.1, nmin = 0.1, downsample = 5000, see
     distm1 <- as.matrix(distm1)
     cut1 <- stats::quantile(unlist(distm1), probs = threshold)
     n1 <- colSums(distm1 <= cut1)
-    sel1 <- n1 >= nrow(em1) * nmin
+    sel1 <- n1 >= (ceiling(nrow(em1) * nmin))
     dat1 <- em1[sel1, ]
     if (nrow(dat1) <= 3) {
       message("too few points remain in group ", names(ems)[x])
@@ -704,4 +760,9 @@ prep_encircle <- function(g, threshold = 0.1, nmin = 0.1, downsample = 5000, see
     dat1
   })
   dplyr::bind_rows(dat)
+}
+
+expand_lims <- function(xmin, xmax, by = 0.1) {
+  len <- xmax - xmin
+  return(c(xmin - len * by, xmax + len * by))
 }

@@ -14,14 +14,16 @@ gg_color_repel(
   nsamp = 50000,
   seed = 34,
   autoswitch = TRUE,
+  layer = 1,
+  out_orig = FALSE,
   out_worst = FALSE,
   repel_label = FALSE,
   encircle = FALSE,
   encircle_alpha = 0.25,
   encircle_expand = 0.02,
   encircle_shape = 0.5,
-  encircle_threshold = 0.1,
-  encircle_nmin = 0.1,
+  encircle_threshold = 0.01,
+  encircle_nmin = 0.01,
   ...
 )
 }
@@ -43,6 +45,10 @@ gg_color_repel(
 \item{seed}{sampling randomization seed}
 
 \item{autoswitch}{try to switch between colour and fill automatically}
+
+\item{layer}{layer to detect color, defaults to first}
+
+\item{out_orig}{output the original colors as named vector}
 
 \item{out_worst}{output the worst combination instead of best}
 
@@ -70,6 +76,6 @@ Wrapper to reorder ggplot colors to maximize color differences in space
 }
 \examples{
 a <- ggplot2::ggplot(ggplot2::mpg, ggplot2::aes(displ, hwy)) +
-ggplot2::geom_point(ggplot2::aes(color = as.factor(cyl)))
+  ggplot2::geom_point(ggplot2::aes(color = as.factor(cyl)))
 b <- gg_color_repel(a, col = "colour")
 }

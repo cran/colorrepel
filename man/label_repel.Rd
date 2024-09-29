@@ -6,18 +6,19 @@
 \usage{
 label_repel(
   g,
-  group_col = "group",
+  group_col = "auto",
   x = "x",
   y = "y",
   txt_pt = 3,
-  remove_current = TRUE,
-  layer = "auto"
+  remove_current = "auto",
+  layer = "auto",
+  ...
 )
 }
 \arguments{
 \item{g}{ggplot object or data.frame}
 
-\item{group_col}{column name in data.frame, default to "group" in ggplot data}
+\item{group_col}{column name in data.frame, default to "label" or "group" in ggplot data}
 
 \item{x}{column name in data.frame for x}
 
@@ -28,6 +29,8 @@ label_repel(
 \item{remove_current}{whether to remove current text}
 
 \item{layer}{text layer to remove, defaults to last}
+
+\item{...}{arguments passed to geom_text_repel}
 }
 \value{
 function, if data.frame input, or new ggplot object
