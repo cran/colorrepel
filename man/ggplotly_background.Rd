@@ -9,6 +9,7 @@ ggplotly_background(
   repel_color = TRUE,
   repel_label = TRUE,
   encircle = FALSE,
+  mascarade = FALSE,
   width = 5,
   height = 5,
   filename = "temp.png",
@@ -17,6 +18,9 @@ ggplotly_background(
   background_alpha = 1,
   use_cairo = FALSE,
   label_lim = 0.05,
+  ggbuild = NULL,
+  crop = TRUE,
+  size_nudge = 0,
   ...
 )
 }
@@ -28,6 +32,8 @@ ggplotly_background(
 \item{repel_label}{whether to add centroid labels with ggrepel}
 
 \item{encircle}{whether to draw geom_encircle by cluster}
+
+\item{mascarade}{use mascarade package to outline clusters}
 
 \item{width}{plot width}
 
@@ -44,6 +50,12 @@ ggplotly_background(
 \item{use_cairo}{whether to use cairo for saving plots, maybe needed for certain ggplot extensions}
 
 \item{label_lim}{whether to limit labels to avoid edge fraction}
+
+\item{ggbuild}{already built ggplot_built object if available}
+
+\item{crop}{whether to call cropping of the background image to remove whitespace}
+
+\item{size_nudge}{slight image size adjustment, default to none}
 
 \item{...}{arguments passed to gg_color_repel}
 }

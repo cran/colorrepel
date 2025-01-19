@@ -6,6 +6,7 @@
 #' @param verbose whether to print messages
 #' @param downsample downsample when too many datapoints are present
 #' @param nsamp how many random sampling color combinations to test, default 50000
+#' @param polychrome_recolor whether to replace the original colors with polychrome creation
 #' @param seed sampling randomization seed
 #' @param autoswitch try to switch between colour and fill automatically
 #' @param layer layer to detect color, defaults to first
@@ -18,6 +19,8 @@
 #' @param encircle_shape shape/smoothing argument passed to geom_encircle
 #' @param encircle_threshold threshold for removing outliers
 #' @param encircle_nmin number of near neighbors for removing outliers
+#' @param mascarade use mascarade package to outline clusters
+#' @param ggbuild already built ggplot_built object if available
 #' @param ... passed to repel_label
 #' @examples
 #' a <- ggplot2::ggplot(ggplot2::mpg, ggplot2::aes(displ, hwy)) +
@@ -32,6 +35,7 @@ gg_color_repel <- function(g = ggplot2::last_plot(),
                            verbose = FALSE,
                            downsample = 5000,
                            nsamp = 50000,
+                           polychrome_recolor = FALSE,
                            seed = 34,
                            autoswitch = TRUE,
                            layer = 1,
@@ -44,15 +48,19 @@ gg_color_repel <- function(g = ggplot2::last_plot(),
                            encircle_shape = 0.5,
                            encircle_threshold = 0.01,
                            encircle_nmin = 0.01,
+                           mascarade = FALSE,
+                           ggbuild = NULL,
                            ...) {
   newcols <- color_repel(g,
     col = col, verbose = verbose,
     downsample = downsample,
     nsamp = nsamp, seed = seed,
+    polychrome_recolor = polychrome_recolor,
     sim = sim, severity = severity,
     autoswitch = autoswitch, layer = layer,
     out_orig = out_orig,
-    out_worst = out_worst
+    out_worst = out_worst,
+    ggbuild = ggbuild
   )
 
   if (autoswitch) {
@@ -69,7 +77,11 @@ gg_color_repel <- function(g = ggplot2::last_plot(),
   }
 
   if (encircle) {
-    dat <- prep_encircle(g, threshold = encircle_threshold, nmin = encircle_nmin, downsample = downsample, seed = seed)
+    dat <- prep_encircle(g,
+      threshold = encircle_threshold,
+      nmin = encircle_nmin, downsample = downsample, seed = seed,
+      ggbuild = ggbuild
+    )
     g <- g + ggalt::geom_encircle(
       data = dat,
       ggplot2::aes(x = x, y = y, fill = group),
@@ -81,8 +93,13 @@ gg_color_repel <- function(g = ggplot2::last_plot(),
     g <- suppressMessages(g + do.call(eval(parse(text = "ggplot2:::scale_fill_manual")), c(values = list(newcols))))
   }
 
+  if (mascarade) {
+    # dat <- prep_mascarade(g, ggbuild = ggbuild, labs = labs)
+    g <- g + ggplot2::geom_path(data = dat, ggplot2::aes(x = x, y = y, color = group), alpha = 0.5)
+  }
+
   if (repel_label) {
-    g <- label_repel(g, ...)
+    g <- label_repel(g, ggbuild = ggbuild, ...)
   }
 
   g

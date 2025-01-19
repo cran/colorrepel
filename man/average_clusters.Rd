@@ -32,7 +32,7 @@ averaging will be done on unlogged data}
 
 \item{low_threshold}{option to remove clusters with too few cells}
 
-\item{method}{whether to take mean (default), median, 10\% truncated mean, or trimean, max, min}
+\item{method}{whether to take mean (default), median, 10\% truncated mean, or trimean, max, min, sum}
 
 \item{output_log}{whether to report log results}
 
@@ -44,4 +44,11 @@ average or other desired calculation by group/cluster matrix
 }
 \description{
 Average expression values per cluster
+}
+\examples{
+mat <- average_clusters(data.frame(
+  z = c(1, 2, 3, 4, 5, 6),
+  y = c(1, 2, 3, 4, 5, 6),
+  x = c(1, 2, 3, 4, 5, 6)
+), metadata = c(1, 1, 2), method = "sum")
 }

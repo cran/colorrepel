@@ -13,12 +13,14 @@ color_repel(
   severity = 0.5,
   verbose = FALSE,
   downsample = 5000,
+  polychrome_recolor = FALSE,
   seed = 34,
   col = "colour",
   autoswitch = TRUE,
   layer = 1,
   out_orig = FALSE,
-  out_worst = FALSE
+  out_worst = FALSE,
+  ggbuild = NULL
 )
 }
 \arguments{
@@ -38,6 +40,8 @@ color_repel(
 
 \item{downsample}{downsample when too many datapoints are present, or use chull}
 
+\item{polychrome_recolor}{whether to replace the original colors with polychrome creation}
+
 \item{seed}{sampling randomization seed}
 
 \item{col}{colour or fill in ggplot}
@@ -49,6 +53,8 @@ color_repel(
 \item{out_orig}{output the original colors as named vector}
 
 \item{out_worst}{output the worst combination instead of best}
+
+\item{ggbuild}{already built ggplot_built object if available}
 }
 \value{
 vector of reordered colors

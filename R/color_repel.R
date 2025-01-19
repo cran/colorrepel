@@ -3,6 +3,7 @@
 #' @param coord coordinates, default is inferred
 #' @param groups groups corresponding to color/fill, default is inferred
 #' @param nsamp how many random sampling color combinations to test, default 50000
+#' @param polychrome_recolor whether to replace the original colors with polychrome creation
 #' @param sim passing a colorbind simulation function if needed
 #' @param severity severity of the color vision defect, between 0 and 1
 #' @param verbose whether to print messages
@@ -13,6 +14,7 @@
 #' @param layer layer to detect color, defaults to first
 #' @param out_orig output the original colors as named vector
 #' @param out_worst output the worst combination instead of best
+#' @param ggbuild already built ggplot_built object if available
 #' @examples
 #' a <- ggplot2::ggplot(ggplot2::mpg, ggplot2::aes(displ, hwy)) +
 #'   ggplot2::geom_point(ggplot2::aes(color = as.factor(cyl)))
@@ -28,21 +30,27 @@ color_repel <- function(g,
                         severity = 0.5,
                         verbose = FALSE,
                         downsample = 5000,
+                        polychrome_recolor = FALSE,
                         seed = 34,
                         col = "colour",
                         autoswitch = TRUE,
                         layer = 1,
                         out_orig = FALSE,
-                        out_worst = FALSE) {
+                        out_worst = FALSE,
+                        ggbuild = NULL) {
   g <- check_patchwork(g)
 
   if (verbose) {
     message("extract original colors...")
   }
-  temp <- check_colour_mapping(g, col = col, return_col = TRUE, autoswitch = autoswitch, layer = layer)
+  temp <- check_colour_mapping(g, col = col, return_col = TRUE, autoswitch = autoswitch, layer = layer, ggbuild = ggbuild)
   col <- temp[["col"]]
   cols <- temp[["cols"]]
-  g2 <- ggplot2::ggplot_build(g)
+  if (is.null(ggbuild)) {
+    g2 <- ggplot2::ggplot_build(g)
+  } else {
+    g2 <- ggbuild
+  }
 
   if (length(cols) <= 1) {
     warning("Did not detect multiple colors, did you specify the correct mapping? Trying to autoswitch...")
@@ -50,7 +58,14 @@ color_repel <- function(g,
   if (verbose) {
     message(cols)
   }
+  
   orig_cols <- cols
+  
+  if (polychrome_recolor) {
+    cols <- create_polychrome(length(cols))
+    orig_cols2 <- cols
+  }
+  
   if (out_orig) {
     temp <- orig_cols
     names(temp) <- sort(unique(g$data[[ggplot2::as_label(g$mapping[[col]])]]))
@@ -83,6 +98,9 @@ color_repel <- function(g,
     # clustering info
     clust <- as.character(g2$data[[layer]][[col]])
     clust <- as.character(as.numeric(factor(clust, levels = orig_cols)))
+    if (polychrome_recolor) {
+      clust <- plyr::mapvalues(clust, from = orig_cols, to = orig_cols2)
+    }
     if (downsample == "chull") {
       res <- by_cluster_chull(em, clust, xcol = "x", ycol = "y")
       em <- res[[1]]
@@ -102,9 +120,11 @@ color_repel <- function(g,
       message("extract plot distances (part 2)...")
     }
     rownames(cdist) <- as.character(1:nrow(cdist))
-    cdist <- suppressMessages(average_clusters_rowwise(cdist, metadata = clust, 
-                                                       if_log = FALSE, method = "min", 
-                                                       output_log = FALSE, trim = TRUE))
+    cdist <- suppressMessages(average_clusters_rowwise(cdist,
+      metadata = clust,
+      if_log = FALSE, method = "min",
+      output_log = FALSE, trim = TRUE
+    ))
     ord <- gtools::mixedorder(colnames(cdist))
     cdist <- cdist[ord, ord]
     cdist[cdist < max(cdist) / 100] <- max(cdist) / 100
@@ -120,7 +140,12 @@ color_repel <- function(g,
     message("iterate color combinations...")
   }
   res <- matrix2_score_n(1 / cdist, 1 / coldist, n = nsamp, verbose = verbose, seed = seed, out_worst = out_worst)
-  temp <- orig_cols[res]
+  
+  if (polychrome_recolor) {
+    temp <- orig_cols2[res]
+  } else {
+    temp <- orig_cols[res]
+  }
   names(temp) <- sort(unique(g$data[[ggplot2::as_label(g$mapping[[col]])]]))
   temp
 }
