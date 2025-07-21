@@ -1,13 +1,13 @@
-6f3c78b44c13995a76865d015aa14b74 *DESCRIPTION
+e27776a75d6bb5fd71e6a30359ca64f7 *DESCRIPTION
 bf0883e4feac061ab71392ea5f1c644e *LICENSE
 499dc41c628f0dd81bf5c02f073e42e1 *NAMESPACE
-60cda98ae3a72ac1989caf11f825d5a7 *NEWS.md
-8d485f78ff9c3303de7a3ab8a0c5f00d *R/color_repel.R
+eea647ba731b3ca8f5d953f5eecac49d *NEWS.md
+16076dfcfb804379941f028d6a0a6e9a *R/color_repel.R
 360d72de056a3c8a086c9bb05f0df935 *R/globals.R
-1a4622c4650dea5254de30fc7ac8ee96 *R/interactive.R
+a98769e0c6b4dfce0f9657c452055355 *R/interactive.R
 c1a41408e47701079130579b5f586f6a *R/utils.R
-a22caf6e2604210db7eba3f4d85510a6 *R/wrappers.R
-c9f9a79aa3d0c1ba51c3fe9a7ea19f40 *README.md
+832e7051426a029b000c7cd3360b08d1 *R/wrappers.R
+2e5945695597ce03ae77f35d82966ddf *README.md
 fd15a0c7ceb18d508fc24c889c89bb2d *inst/CITATION
 89ff0a496f72e9834668af1a49487341 *inst/adr1.png
 e1ed3c7d577d95493028c06538716fe4 *inst/adr2.png
@@ -15,7 +15,7 @@ e1ed3c7d577d95493028c06538716fe4 *inst/adr2.png
 98801545d0644bec3f480d625eb05d9f *inst/scRNAseqUMAP_example.png
 cf10064f2187265fd73ff84787956903 *inst/scRNAseqUMAP_extra.png
 8165b5ef8778b5efd35534159f4d8217 *inst/scRNAseqVln_example.png
-c1a0a183e5e9bc84b610c30eebf05b84 *inst/stackbar_example.png
+0e8cb3201f3ffa40241c4369b6a60593 *inst/stackbar_example.png
 90bef993851736dc7058d5e91f104442 *man/average_clusters.Rd
 783447270d448359d15f8e03fa55cd49 *man/average_clusters_rowwise.Rd
 57d7622aba2e232725b0f7f54e38597c *man/by_cluster_sampling.Rd
@@ -23,7 +23,7 @@ b1b877d765ba7cd5aa6d59fb795eaf2f *man/calc_distance.Rd
 15da98e6688c839c37e7586714d29491 *man/color_repel.Rd
 8d7457048b0e755710a442f1086933e0 *man/get_labs.Rd
 9faeb10003109c049d05c2d8e39b9267 *man/gg_color_repel.Rd
-67f3bb8b8b664b9620388ecf96b94771 *man/ggplotly_background.Rd
+5d06e6bd222b4444cf0d4286bc20ffde *man/ggplotly_background.Rd
 d3eb806c37403514f62c8f5abf651762 *man/label_repel.Rd
 f1c00e30b89fe1626056edcfca564a73 *man/matrix2_score.Rd
 4518144ba789908214a03124158a5416 *man/matrix2_score_n.Rd

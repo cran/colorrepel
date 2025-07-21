@@ -1,6 +1,13 @@
+# Changes in version 0.4.3 (2025-07-21)
+* Temporarily disabled ggalt dependency due to ggalt potentially being archived
+
+# Changes in version 0.4.2 (2025-04-15)
+* Expose tooltip argument for ggplotly
+
 # Changes in version 0.4.1 (2025-01-15)
 * Support recoloring with Polychrome package
 * Fixed recoloring internal logic to be more flexible
+* Package is ggplot2 3.5+ compatible, but note that saved ggplot objects of lower versions may not be
 
 # Changes in version 0.4.0 (2025-01-06)
 * Support for mascarade package

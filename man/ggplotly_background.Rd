@@ -21,6 +21,7 @@ ggplotly_background(
   ggbuild = NULL,
   crop = TRUE,
   size_nudge = 0,
+  tooltip = NULL,
   ...
 )
 }
@@ -57,6 +58,8 @@ ggplotly_background(
 
 \item{size_nudge}{slight image size adjustment, default to none}
 
+\item{tooltip}{tooltip vector for ggplotly}
+
 \item{...}{arguments passed to gg_color_repel}
 }
 \value{
@@ -69,5 +72,4 @@ Prepare ggplot object to ggplotly-compatible layer and image layer
 a <- ggplot2::ggplot(ggplot2::mpg, ggplot2::aes(displ, hwy)) +
   ggplot2::geom_point(ggplot2::aes(color = as.factor(cyl)))
 new_colors <- color_repel(a)
-b <- ggplotly_background(a, filename = NULL)
 }
