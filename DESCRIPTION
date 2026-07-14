@@ -1,7 +1,7 @@
 Package: colorrepel
 Title: Repel Visually Similar Colors for Colorblind Users in Various
         Plots
-Version: 0.4.3
+Version: 0.5.0
 Authors@R: 
     person(given = "Rui",
            family = "Fu",
@@ -20,8 +20,8 @@ Suggests: colorspace
 URL: https://github.com/raysinensis/color_repel
 ByteCompile: true
 NeedsCompilation: no
-Packaged: 2025-07-21 13:16:53 UTC; rfu
+Packaged: 2026-07-14 02:15:59 UTC; rfu
 Author: Rui Fu [cre, aut, cph] (ORCID: <https://orcid.org/0000-0001-8183-4549>)
 Maintainer: Rui Fu <raysinensis@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-07-21 13:52:02 UTC
+Date/Publication: 2026-07-14 02:50:03 UTC
