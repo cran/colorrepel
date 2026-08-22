@@ -15,6 +15,10 @@
 #' @param autoswitch try to switch between colour and fill automatically
 #' @param layer layer to detect color, defaults to first
 #' @param out_worst output the worst combination instead of best
+#' @param repel_legend_weight also repel colors so similar colors are not next to each other in the legend (0 = all based on plot distance, 1 = all based on legend, default 0.5)
+#' @param label_repel whether to add centroid labels with ggrepel
+#' @param encircle whether to draw convex hull outlines by cluster
+#' @param mascarade use mascarade package to outline clusters
 #' @param ... passed to [ggplot2::scale_color_manual()] or
 #'   [ggplot2::scale_fill_manual()]
 #' @examples
@@ -37,6 +41,10 @@ scale_color_repel <- function(nsamp = 50000,
                               autoswitch = TRUE,
                               layer = 1,
                               out_worst = FALSE,
+                              repel_legend_weight = 0.5,
+                              label_repel = FALSE,
+                              encircle = FALSE,
+                              mascarade = FALSE,
                               ...) {
   structure(
     list(
@@ -51,7 +59,13 @@ scale_color_repel <- function(nsamp = 50000,
         col = col,
         autoswitch = autoswitch,
         layer = layer,
-        out_worst = out_worst
+        out_worst = out_worst,
+        repel_legend_weight = repel_legend_weight
+      ),
+      annotation_params = list(
+        label_repel = label_repel,
+        encircle = encircle,
+        mascarade = mascarade
       ),
       scale_params = list(...)
     ),
@@ -76,6 +90,10 @@ scale_fill_repel <- function(nsamp = 50000,
                              autoswitch = TRUE,
                              layer = 1,
                              out_worst = FALSE,
+                             repel_legend_weight = 0.5,
+                             label_repel = FALSE,
+                             encircle = FALSE,
+                             mascarade = FALSE,
                              ...) {
   scale_color_repel(
     nsamp = nsamp,
@@ -89,6 +107,10 @@ scale_fill_repel <- function(nsamp = 50000,
     autoswitch = autoswitch,
     layer = layer,
     out_worst = out_worst,
+    repel_legend_weight = repel_legend_weight,
+    label_repel = label_repel,
+    encircle = encircle,
+    mascarade = mascarade,
     ...
   )
 }
@@ -135,5 +157,47 @@ ggplot_add.scale_color_repel <- function(object, plot, ...) {
     ggplot2::scale_color_manual
   )
 
-  plot + do.call(scale_fun, scale_params)
+  plot <- suppressMessages(plot + do.call(scale_fun, scale_params))
+
+  if (isTRUE(object$annotation_params[["mascarade"]])) {
+    dat <- prep_mascarade(plot, ggbuild = ggbuild, labs = NULL)
+    if (!"group" %in% colnames(dat) && "cluster" %in% colnames(dat)) {
+      dat[["group"]] <- dat[["cluster"]]
+    }
+    plot <- plot + ggplot2::geom_path(
+      data = dat,
+      ggplot2::aes(x = x, y = y, group = group),
+      color = "black",
+      alpha = 0.5
+    )
+  }
+
+  if (isTRUE(object$annotation_params[["encircle"]])) {
+    dat <- prep_encircle(plot, ggbuild = ggbuild)
+    dat <- order_encircle_data(dat)
+    plot <- plot + ggplot2::geom_polygon(
+      data = dat,
+      ggplot2::aes(x = x, y = y, group = group),
+      color = "black",
+      fill = NA,
+      alpha = 0.5
+    )
+  }
+
+  if (isTRUE(object$annotation_params[["label_repel"]])) {
+    plot <- label_repel(plot, ggbuild = ggbuild)
+  }
+
+  plot
+}
+
+order_encircle_data <- function(dat) {
+  dat <- split(dat, dat[["group"]])
+  dat <- lapply(dat, function(x) {
+    if (nrow(x) > 2) {
+      x <- x[grDevices::chull(x[["x"]], x[["y"]]), , drop = FALSE]
+    }
+    x
+  })
+  do.call(rbind, dat)
 }

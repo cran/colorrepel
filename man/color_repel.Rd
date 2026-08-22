@@ -20,6 +20,7 @@ color_repel(
   layer = 1,
   out_orig = FALSE,
   out_worst = FALSE,
+  repel_legend_weight = 0.5,
   ggbuild = NULL
 )
 }
@@ -32,7 +33,7 @@ color_repel(
 
 \item{nsamp}{how many random sampling color combinations to test, default 50000}
 
-\item{sim}{passing a colorbind simulation function if needed}
+\item{sim}{passing a colorblind simulation function if needed}
 
 \item{severity}{severity of the color vision defect, between 0 and 1}
 
@@ -53,6 +54,8 @@ color_repel(
 \item{out_orig}{output the original colors as named vector}
 
 \item{out_worst}{output the worst combination instead of best}
+
+\item{repel_legend_weight}{also repel colors so similar colors are not next to each other in the legend (0 = all based on plot distance, 1 = all based on legend, default 0.5)}
 
 \item{ggbuild}{already built ggplot_built object if available}
 }

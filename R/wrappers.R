@@ -1,10 +1,10 @@
 #' Wrapper to reorder ggplot colors to maximize color differences in space
 #' @param g ggplot plot object
 #' @param col colour or fill in ggplot
-#' @param sim passing a colorbind simulation function if needed
+#' @param sim passing a colorblind simulation function if needed
 #' @param severity severity of the color vision defect, between 0 and 1
 #' @param verbose whether to print messages
-#' @param downsample downsample when too many datapoints are present
+#' @param downsample downsample when too many data points are present
 #' @param nsamp how many random sampling color combinations to test, default 50000
 #' @param polychrome_recolor whether to replace the original colors with polychrome creation
 #' @param seed sampling randomization seed
@@ -12,6 +12,7 @@
 #' @param layer layer to detect color, defaults to first
 #' @param out_orig output the original colors as named vector
 #' @param out_worst output the worst combination instead of best
+#' @param repel_legend_weight also repel colors so similar colors are not next to each other in the legend (0 = all based on plot distance, 1 = all based on legend, default 0.5)
 #' @param repel_label whether to add centroid labels with ggrepel
 #' @param encircle whether to draw geom_encircle by cluster
 #' @param encircle_alpha alpha argument passed to geom_encircle
@@ -41,6 +42,7 @@ gg_color_repel <- function(g = ggplot2::last_plot(),
                            layer = 1,
                            out_orig = FALSE,
                            out_worst = FALSE,
+                           repel_legend_weight = 0.5,
                            repel_label = FALSE,
                            encircle = FALSE,
                            encircle_alpha = 0.25,
@@ -60,6 +62,7 @@ gg_color_repel <- function(g = ggplot2::last_plot(),
     autoswitch = autoswitch, layer = layer,
     out_orig = out_orig,
     out_worst = out_worst,
+    repel_legend_weight = repel_legend_weight,
     ggbuild = ggbuild
   )
 
@@ -77,8 +80,8 @@ gg_color_repel <- function(g = ggplot2::last_plot(),
   }
 
   if (mascarade) {
-    # dat <- prep_mascarade(g, ggbuild = ggbuild, labs = labs)
-    g <- g #+ ggplot2::geom_path(data = data, ggplot2::aes(x = x, y = y, color = group), alpha = 0.5)
+    dat <- prep_mascarade(g, ggbuild = ggbuild, labs = labs)
+    g <- g + ggplot2::geom_path(data = dat, ggplot2::aes(x = x, y = y, color = group), alpha = 0.5)
   }
 
   if (repel_label) {

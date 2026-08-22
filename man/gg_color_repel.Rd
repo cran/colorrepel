@@ -18,6 +18,7 @@ gg_color_repel(
   layer = 1,
   out_orig = FALSE,
   out_worst = FALSE,
+  repel_legend_weight = 0.5,
   repel_label = FALSE,
   encircle = FALSE,
   encircle_alpha = 0.25,
@@ -35,13 +36,13 @@ gg_color_repel(
 
 \item{col}{colour or fill in ggplot}
 
-\item{sim}{passing a colorbind simulation function if needed}
+\item{sim}{passing a colorblind simulation function if needed}
 
 \item{severity}{severity of the color vision defect, between 0 and 1}
 
 \item{verbose}{whether to print messages}
 
-\item{downsample}{downsample when too many datapoints are present}
+\item{downsample}{downsample when too many data points are present}
 
 \item{nsamp}{how many random sampling color combinations to test, default 50000}
 
@@ -56,6 +57,8 @@ gg_color_repel(
 \item{out_orig}{output the original colors as named vector}
 
 \item{out_worst}{output the worst combination instead of best}
+
+\item{repel_legend_weight}{also repel colors so similar colors are not next to each other in the legend (0 = all based on plot distance, 1 = all based on legend, default 0.5)}
 
 \item{repel_label}{whether to add centroid labels with ggrepel}
 
